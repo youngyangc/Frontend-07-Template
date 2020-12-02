@@ -55,6 +55,12 @@
             }
             board.appendChild(document.createElement("br"))
         }
+        if(color === 2){
+            let p = bestChoice(pattern,color);
+            //console.log(p)
+            if(p.point)
+                move(p.point[0], p.point[1])
+        }
     }
 
     function move(x, y) {
@@ -63,7 +69,8 @@
             alert(color === 1 ? "○ is winner" : "× is winner")
         }
         color = 3 - color;
-        console.log(bestChoice(pattern,color))
+        //console.log(bestChoice(pattern,color))s
+        //console.log(color)
         show(pattern);
     }
 
@@ -166,7 +173,6 @@
                     break outer;
             }
         }
-
         return {
             point: point,
             result: point ? result : 0 
