@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    div{
+        display: inline-block;
+        background-color: gray;
+        width: 100px;
+        height: 100px;
+        border-radius: 50px;
+        margin: 30px;
+    }
+
+    .red.light{
+        background-color: red;
+    }
+    .yellow.light{
+        background-color: yellow;
+    }
+    .green.light{
+        background-color: green;
+    }
+
+</style>
+
+<body>
+    <div class="red"></div>
+    <div class="yellow"></div>
+    <div class="green"></div>
+    <input type="button" id="next" value="next">
+</body>
+
+<script>
+    /**
+    * 红绿灯
+    */
+    function redYellowGreen(color){
+        //console.log(color+"亮")
+        changeColor(color)
+        let tmp = new String(color);
+        if(color === 'red'){
+            time = 10000;
+            tmp = "yellow"
+        }else if(color === 'yellow'){
+            time = 2000;
+            tmp = "green"
+        }else{
+            time = 5000;
+            tmp = "red"
+        }
+        // setTimeoutSleep(tmp,time)
+        // promiseSleep(time).then(()=>{
+        //     redYellowGreen(tmp)
+        // })
+    }
+
+    // async function go(){
+    //     while(true){
+    //         changeColor("red");
+    //         await happend(document.getElementById("next"),"click");
+    //         changeColor("yellow");
+    //         await happend(document.getElementById("next"),"click");
+    //         changeColor("green");
+    //         await happend(document.getElementById("next"),"click");
+    //     }
+    // }
+
+
+    //generator 方法
+    function* go(){
+        while(true){
+            changeColor("red");
+            yield promiseSleep(1000)
+            changeColor("yellow");
+            yield promiseSleep(200)
+            changeColor("green");
+            yield promiseSleep(500)
+        }
+    }
+
+
+    //generator 运行方法
+    function run(iterator){
+        let {value,done} = iterator.next();
+        if(done)
+            return;
+        if(value instanceof Promise)
+            value.then(()=>{
+                run(iterator)
+            })
+    }
+
+    // co框架
+    function co(generator){
+        return function(){
+            return run(generator());
+        }
+    }
+
+    function promiseSleep(t){
+        return new Promise((resolve,reject) =>{
+            setTimeout(resolve,t)
+        })
+    }
+
+    function happend(element,eventName){
+        return new Promise((resolve,reject) =>{
+            element.addEventListener(eventName,resolve,true)
+        })
+    }
+
+    function setTimeoutSleep(color,time){
+        setTimeout(function(){
+            redYellowGreen(color)
+        },time)
+    }
+
+    function changeColor(color){
+        let divList = document.getElementsByTagName("div")
+        //清空颜色
+        for(let i =0;i<3;i++){
+            divList[i].classList.remove("light")
+        }
+        document.getElementsByClassName(color)[0].classList.add("light")
+    }
+
+    //生成 asnyc形式调用
+    go = co(go)
+
+
+    //async generator
+    //放回一个 1到+无穷的序列
+    async function* counter(){
+        let i = 0;
+        while(true){
+            await promiseSleep(1000);
+            yield i++
+        }
+    }
+
+    (async function(){
+        for await(let v of counter()){
+            console.log(v)
+        }
+    })()
+
+
+</script>
+
+</html>
