@@ -30,9 +30,9 @@
 </body>
 <script>
     let pattern = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
+        0, 0, 0,
+        0, 0, 0,
+        0, 0, 0
     ]
     let color = 1;
     function show(pattern) {
@@ -48,8 +48,8 @@
                 //icon默认样式
                 cell.classList.add("iconfont");
                 //确认插入文本
-                pattern[i][j] == 2 ? cell.classList.add("icon-cha") :
-                    pattern[i][j] == 1 ? cell.classList.add("icon-circle") : "";
+                pattern[3*i+j] == 2 ? cell.classList.add("icon-cha") :
+                    pattern[3*i+j] == 1 ? cell.classList.add("icon-circle") : "";
                 cell.addEventListener("click", () => move(j, i))
                 board.appendChild(cell)
             }
@@ -64,7 +64,7 @@
     }
 
     function move(x, y) {
-        pattern[y][x] = color;
+        pattern[3*y+x] = color;
         if (check(pattern, color)) {
             alert(color === 1 ? "○ is winner" : "× is winner")
         }
@@ -80,7 +80,7 @@
         for (let i = 0; i < 3; i++) {
             let win = true;
             for (let j = 0; j < 3; j++) {
-                if (pattern[i][j] !== color) {
+                if (pattern[3*i+j] !== color) {
                     win = false;
                 }
             }
@@ -92,7 +92,7 @@
         for (let i = 0; i < 3; i++) {
             let win = true;
             for (let j = 0; j < 3; j++) {
-                if (pattern[j][i] !== color) {
+                if (pattern[i+3*j] !== color) {
                     win = false;
                 }
             }
@@ -104,7 +104,7 @@
         {
             let win = true;
             for (let j = 0; j < 3; j++) {
-                if (pattern[j][j] !== color) {
+                if (pattern[4*j] !== color) {
                     win = false
                 }
             }
@@ -115,7 +115,7 @@
         {
             let win = true;
             for (let j = 0; j < 3; j++) {
-                if (pattern[j][2 - j] !== color) {
+                if (pattern[2*j+2] !== color) {
                     win = false
                 }
             }
@@ -127,17 +127,18 @@
 
     //clone
     function clone(pattern) {
-        return JSON.parse(JSON.stringify(pattern))//生成一个新的json实例
+        //return JSON.parse(JSON.stringify(pattern))//生成一个新的json实例
+        return Object.create(pattern);
     }
 
     //获取要win的点
     function willWin(pattern, color) {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
-                if (pattern[i][j])
+                if (pattern[3*i+j])
                     continue;
                 let tmp = clone(pattern);
-                tmp[i][j] = color;
+                tmp[3*i+j] = color;
                 if (check(tmp, color)) {
                     return [j, i]
                 }
@@ -160,10 +161,10 @@
         let point = null;
         outer:for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
-                if (pattern[i][j])
+                if (pattern[3*i+j])
                     continue;
                 let tmp = clone(pattern);
-                tmp[i][j] = color;
+                tmp[3*i+j] = color;
                 let r = bestChoice(tmp, 3 - color).result;
                 if (-r > result) {
                     result = -r;
