@@ -92,6 +92,7 @@
         position: relative;
         margin-top: 12.5px;
         z-index: 2;
+        cursor: pointer;
     }
 </style>
 
@@ -102,7 +103,8 @@
 <script>
     let pattern = init_checkboard();
     const SVG_NS = "http://www.w3.org/2000/svg";
-    const XLIN_NS = "http://www.w3.org/1999/xlink"
+    const XLIN_NS = "http://www.w3.org/1999/xlink";
+    let color = 1;
     /*
         初始化棋盘一维数组
     */
@@ -130,26 +132,178 @@
                 let svg = document.createElementNS(SVG_NS, 'svg')
                 svg.classList.add("icon");
                 svg.setAttribute("aria-hidden", "true")
-                let use = document.createElementNS(SVG_NS,'use')
+                let use = document.createElementNS(SVG_NS, 'use')
                 //判断落点是应该放入哪个棋子
                 let styleStr = "";
-                styleStr = pattern[15*i+j] === 1 ? "#icon-baizi" :
-                pattern[15*i+j] === 2 ? "#icon-baizi" : "";
-                use.setAttributeNS(XLIN_NS,"xlink:href", styleStr)
+                styleStr = pattern[15 * i + j] === 1 ? "#icon-baizi" :
+                    pattern[15 * i + j] === 2 ? "#icon-heizi" : "";
+                use.setAttributeNS(XLIN_NS, "xlink:href", styleStr)
                 svg.appendChild(use)
+                //绑定点击事件
+                svg.addEventListener("click", () => move(i, j))
                 cell.appendChild(svg)
-                cell.addEventListener("click",() => move(i,j))
                 board.appendChild(cell)
             }
             board.appendChild(document.createElement("br"))
         }
     }
 
-    function move(i,j){
-        console.log(i+":"+j)
+    //点击事件操作
+    function move(i, j) {
+        //判断当前点是否有棋子
+        if (pattern[15 * i + j]) {
+            alert("请勿重复下子！")
+            return;
+        }
+        //更新点
+        pattern[15 * i + j] = color;
+        //判断是否胜利
+        if (check(pattern, color)) {
+            alert(color === 1 ? "白子胜利！" : "黑子胜利！")
+        }
+        //换手
+        color = 3 - color
+        show(pattern)
+    }
+    show(pattern)
+
+    //获取当前颜色的所有下标数组
+    function getIndexArr(pattern, color) {
+        let indexArr = [];
+        for (let i = 0; i < pattern.length; i++) {
+            if (pattern[i] === color) {
+                indexArr.push(i)
+            }
+        }
+        return indexArr;
     }
 
-    show(pattern)
+    //判断横向胜利情况
+    function rowWin(indexArr) {
+        let win = false;
+        for (let i = 0; i < indexArr.length; i++) {
+            let check = true;
+            //首先判断后四格index是否在一个15倍数内
+            //只需看它后四个子是否连续
+            for (let j = 1; j <= 4; j++) {
+                //如果有一个在15倍数外则break;
+                if (Math.floor(indexArr[i + j] / 15) !== Math.floor(indexArr[i] / 15)) {
+                    check = false;
+                    break;
+                }
+                //如果当前不连续则break;
+                if (indexArr[i + j] !== indexArr[i + j - 1] + 1) {
+                    check = false;
+                    break;
+                }
+            }
+            //如果满足胜利条件直接返回结果
+            if (check) {
+                win = true
+                return win;
+            }
+        }
+        return win;
+    }
+
+    //判断纵向胜利情况
+    function colWin(indexArr) {
+        let win = false;
+        for (let i = 0; i < indexArr.length; i++) {
+            let check = true;
+            //获取当前所在行
+            let row = Math.floor(indexArr[i] / 15);
+            //如果非11行内直接break,后续数据也无需再看了
+            if (row >= 11) {
+                check = false;
+                break;
+            }
+            //判断它垂直下方是否是4子连续
+            for (let j = 1; j <= 4; j++) {
+                //获取当前落点的下方位置
+                let rightIndex = 15 * (j + row) + (indexArr[i] % 15)
+                //判断正确的落点是否在当前数组内
+                if (indexArr.indexOf(rightIndex) === -1) {
+                    check = false;
+                    break;
+                }
+            }
+            if (check) {
+                win = true;
+                return win;
+            }
+        }
+        return win;
+    }
+
+    //判断斜向胜利
+    function slantWin(indexArr) {
+        let win = false;
+        for (let i = 0; i < indexArr.length; i++) {
+            let check = true;
+            //获取当前行
+            let row = Math.floor(indexArr[i] / 15);
+            //如果非11行内直接break,后续数据也无需再看了
+            if (row >= 11) {
+                check = false;
+                break;
+            }
+            //判断他的往左下的正确落子
+            for (let j = 1; j <= 4; j++) {
+                if (indexArr[i] % 15 < 4) {
+                    check = false;
+                    break;
+                }
+                let rightIndex = 15 * (j + row) + (indexArr[i] % 15 - j)
+                if (indexArr.indexOf(rightIndex) === -1) {
+                    check = false;
+                    break;
+                }
+            }
+            //如果左下角已经成功判断则返回
+            if(check){
+                win = true;
+                return win;
+            }
+            check = true;//重置check继续判断
+            //判断他的往右下的正确落子
+            for (let j = 1; j <= 4; j++) {
+                if (indexArr[i] % 15 > 10) {
+                    check = false;
+                    break;
+                }
+                let rightIndex = 15 * (j + row) + (indexArr[i] % 15 + j)
+                if (indexArr.indexOf(rightIndex) === -1) {
+                    check = false;
+                    break;
+                }
+            }
+            if(check){
+                win = true;
+                return win;
+            }
+        }
+        return win;
+    }
+
+    //检查是否胜利
+    function check(pattern, color) {
+        //获取当前颜色的所有下标
+        indexArr = getIndexArr(pattern, color);
+        //横向判断
+        if (rowWin(indexArr)) {
+            return true;
+        }
+        //纵向判断
+        if (colWin(indexArr)) {
+            return true;
+        }
+        //斜向判断
+        if (slantWin(indexArr)){
+            return true;
+        }
+        return false;
+    }
 
 </script>
 
