@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_2240053_3ju4qco6xbg.css">
+    <script src="http://at.alicdn.com/t/font_2240053_3ju4qco6xbg.js"></script>
+</head>
+<style>
+    .cell {
+        width: 50px;
+        height: 50px;
+        position: relative;
+        background-color: blanchedalmond;
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .cell::before {
+        content: "";
+        width: 50px;
+        position: absolute;
+        top: 25px;
+        right: 0px;
+        height: 1px;
+        background-color: black;
+    }
+
+    .cell:nth-of-type(15n+1)::before {
+        content: "";
+        width: 25px;
+        position: absolute;
+        top: 25px;
+        right: 0px;
+        height: 1px;
+        background-color: black;
+    }
+
+    .cell:nth-of-type(15n+15)::before {
+        content: "";
+        width: 25px;
+        position: absolute;
+        top: 25px;
+        right: 25px;
+        height: 1px;
+        background-color: black;
+    }
+
+    .cell::after {
+        content: "";
+        height: 50px;
+        position: absolute;
+        width: 1px;
+        right: 25px;
+        background-color: black;
+    }
+
+    .cell:nth-of-type(n+1):nth-of-type(-n+15)::after {
+        content: "";
+        height: 25px;
+        position: absolute;
+        width: 1px;
+        bottom: 0px;
+        right: 25px;
+        background-color: black;
+    }
+
+    .cell:nth-of-type(n+211):nth-of-type(-n+225)::after {
+        content: "";
+        height: 25px;
+        position: absolute;
+        width: 1px;
+        top: 0px;
+        right: 25px;
+        background-color: black;
+    }
+
+    .iconfont {
+        line-height: 50px;
+        font-size: 25px;
+    }
+
+    .icon {
+        width: 25px;
+        height: 25px;
+        vertical-align: -0.15em;
+        fill: currentColor;
+        overflow: hidden;
+        position: relative;
+        margin-top: 12.5px;
+        z-index: 2;
+    }
+</style>
+
+<body>
+    <div id="board"></div>
+
+</body>
+<script>
+    let pattern = init_checkboard();
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const XLIN_NS = "http://www.w3.org/1999/xlink"
+    /*
+        初始化棋盘一维数组
+    */
+    function init_checkboard() {
+        let pattern = [];
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 15; j++) {
+                pattern.push(0)
+            }
+        }
+        return pattern
+    }
+    /*
+        更新棋盘落点
+    */
+    function show(pattern) {
+        let board = document.getElementById("board");
+        board.innerHTML = "";
+        for (let i = 0; i < 15; i++) {
+            for (let j = 0; j < 15; j++) {
+                //创建div
+                let cell = document.createElement("div");
+                cell.classList.add("cell")
+                //创建棋子样式
+                let svg = document.createElementNS(SVG_NS, 'svg')
+                svg.classList.add("icon");
+                svg.setAttribute("aria-hidden", "true")
+                let use = document.createElementNS(SVG_NS,'use')
+                //判断落点是应该放入哪个棋子
+                let styleStr = "";
+                styleStr = pattern[15*i+j] === 1 ? "#icon-baizi" :
+                pattern[15*i+j] === 2 ? "#icon-baizi" : "";
+                use.setAttributeNS(XLIN_NS,"xlink:href", styleStr)
+                svg.appendChild(use)
+                cell.appendChild(svg)
+                cell.addEventListener("click",() => move(i,j))
+                board.appendChild(cell)
+            }
+            board.appendChild(document.createElement("br"))
+        }
+    }
+
+    function move(i,j){
+        console.log(i+":"+j)
+    }
+
+    show(pattern)
+
+</script>
+
+</html>
