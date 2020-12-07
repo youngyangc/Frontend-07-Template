@@ -161,6 +161,8 @@
         if (check(pattern, color)) {
             alert(color === 1 ? "白子胜利！" : "黑子胜利！")
         }
+        //checkWin(pattern, color, getCanDownList(pattern, color), 0);//预测结果
+        bestChoice(pattern, color)
         //换手
         color = 3 - color
         show(pattern)
@@ -261,7 +263,7 @@
                 }
             }
             //如果左下角已经成功判断则返回
-            if(check){
+            if (check) {
                 win = true;
                 return win;
             }
@@ -278,7 +280,7 @@
                     break;
                 }
             }
-            if(check){
+            if (check) {
                 win = true;
                 return win;
             }
@@ -299,10 +301,117 @@
             return true;
         }
         //斜向判断
-        if (slantWin(indexArr)){
+        if (slantWin(indexArr)) {
             return true;
         }
         return false;
+    }
+
+    //拷贝数组
+    function clone(pattern) {
+        return Object.create(pattern)
+    }
+
+    //获取当前颜色棋子在周围2格内得可落点下标数组
+    function getCanDownList(pattern, color) {
+        let canDown = []
+        for (let i = 0; i < pattern.length; i++) {
+            if (pattern[i] === color) {
+                canDown.push.apply(canDown, getTwoCellArr(pattern, i))//合并数组
+            }
+        }
+        return Array.from(new Set(canDown));
+    }
+
+    //获取当前索引周围2格得点
+    function getTwoCellArr(pattern, index) {
+        let downArr = []
+        //获取当前点两个范围内得空格
+        //获取当前行
+        let row = Math.floor(index / 15);
+        //获取当前列
+        let col = index % 15;
+        //获取横向点
+        for (let i = 2; i >= 0; i--) {
+            for (let j = 2; j >= 0; j--) {
+                //从外往内
+                if (row - i >= 0) {
+                    if (col - j >= 0) {
+                        if (!pattern[(row - i) * 15 + (col - j)]) {
+                            downArr.push((row - i) * 15 + (col - j))
+                        }
+                    }
+                    if (col + j <= 14) {
+                        if (!pattern[(row - i) * 15 + (col + j)]) {
+                            downArr.push((row - i) * 15 + (col + j))
+                        }
+                    }
+                }
+                if (row + i <= 14) {
+                    if (col - j >= 0) {
+                        if (!pattern[(row + i) * 15 + (col - j)]) {
+                            downArr.push((row + i) * 15 + (col - j))
+                        }
+
+                    }
+                    if (col + j <= 14) {
+                        if (!pattern[(row + i) * 15 + (col + j)]) {
+                            downArr.push((row + i) * 15 + (col + j))
+                        }
+
+                    }
+                }
+            }
+        }
+        return Array.from(new Set(downArr))
+    }
+
+    //判断是否即将胜利
+    function checkWin(pattern, color, canDown, index) {
+        //首先判断是否即将胜利
+        let flag = null;
+        //递归只判断2步
+        if (index > 1) {
+            return null;
+        }
+        index++;
+        for (let i = 0; i < canDown.length; i++) {
+            if (pattern[canDown[i]]) {
+                continue;
+            }
+            let tmp = clone(pattern)
+            tmp[canDown[i]] = color
+            //如果检查命中则表示即将胜利
+            if (check(tmp, color)) {
+                //count++;
+                // console.log(canDown[i])
+                // console.log(index)
+                console.log("willwin")
+                return {
+                    point: canDown[i],
+                    step: index
+                }
+            }
+            //预测下一步行动
+            flag = checkWin(tmp, color, getCanDownList(tmp, color), index)
+        }
+        //其次判断当前步骤之后会
+        return flag;
+    }
+
+    //判断优解
+    function bestChoice(pattern, color) {
+        let p;
+
+        if (p = checkWin(pattern, color, getCanDownList(pattern, color), 0)) {
+            console.log(p);
+            return {
+                result : 1,
+                point : p.point,
+                step : p.step
+            }
+        }
+
     }
 
 </script>
