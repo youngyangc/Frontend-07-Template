@@ -11,7 +11,7 @@
     2. 和广度优先搜索的区别 只是在于一个数据结构上是queue还是stack，用代码表达得话就是 push()、shift()和 push()、pop()的区别
 4. A*搜索的数据结构为排序的结构,即优先取出按我们预期规则的数（最小数、最大数等）
 5. 关于childrenNodes和动态绘制的数组元素严格对应，父节点不能有回车空格否则会差了一个文本节点
-6. A*实现逻辑[参考网页]:(https://www.redblobgames.com/)：
+6. A*实现逻辑[参考网页]:(https://www.redblobgames.com/ 'url')：
     + 给定一个优先级队列`queue`（排序、二叉树等），我们将每个格子的位置信息和每个格子到终点的优先值，每次取出成本值最低的格进行搜索
     + 优先值`priority`的计算逻辑： 搜索格子的成本值（`cost(next)`） + 搜索格子到终点的距离(`distance(next,end)`)
     + 成本值(cost)的计算逻辑：设置初始位置的成本值为1（因为0在Boolean判断中为false方便处理设置为1） 每次搜索到下一格的成本值为：(`cost(current)+distance(current,next)`)发起搜索格子的成本值+发起搜索格子到当前搜索格子的距离
