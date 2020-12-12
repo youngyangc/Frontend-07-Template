@@ -147,7 +147,7 @@
             let new_cost = cost_so_far[pre] + graphCost([x,y],pre);
             //如果当前搜索格没有计入过 或者 当前搜索格的成本值比之前的小
             if(!cost_so_far[[x,y]] || new_cost < cost_so_far[[x,y]]){
-                await sleep(30);
+                await sleep(10);
                 //给当前搜索格赋予新的成本值
                 cost_so_far[[x,y]] = new_cost
                 //加入队列的元素
@@ -167,7 +167,7 @@
 
         //计算两个点之间的距离
         function graphCost(x,y){
-            return (x[0] - y[0])**2 + (x[1]-y[1]) ** 2
+            return Math.sqrt((x[0] - y[0])**2 + (x[1]-y[1]) ** 2)
         }
 
         //计算当前点和终点的距离
