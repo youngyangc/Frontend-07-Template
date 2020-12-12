@@ -123,8 +123,10 @@
 
     //广度优先搜索 寻路
     async function findPath(map, start, end) {
+        //记录每个格子的前一个格子位置
         let came_from = Object.create(map);
-        let searchTable = Object.create(map);
+        //把map拷贝了一份主要用于判断无法通行的位置 
+        let wall_arr = Object.create(map);
         //var queue = [start];
         let queue = new Sorted([{
                     point:start,
@@ -140,23 +142,23 @@
             }
             //计算这个点的当前分值
             //撞墙点省略
-            if (searchTable[100 * x + y] === 1) {
+            if (wall_arr[100 * x + y]) {
                 return;
             }
-            //计算当前格的预算值
+            //计算当前格的成本值
             let new_cost = cost_so_far[pre] + graphCost([x,y],pre);
-            //如果当前搜索格没有计入过 或者 当前搜索格的新优先级比之前的小
+            //如果当前搜索格没有计入过 或者 当前搜索格的成本值比之前的小
             if(!cost_so_far[[x,y]] || new_cost < cost_so_far[[x,y]]){
                 await sleep(30);
-                //给当前搜索格赋予新的预算值
+                //给当前搜索格赋予新的成本值
                 cost_so_far[[x,y]] = new_cost
                 //加入队列的元素
                 container.children[x * 100 + y].style.backgroundColor = "red"
                 //当前搜索的节点记录上他的前置搜索节点
                 came_from[100 * x + y] = pre
-                //当前格子的预算值 格子的预算值+离终点距离
+                //当前格子的优先值 格子的成本值+离终点距离
                 let priority = new_cost + distance([x,y])
-                //在队列中存入每个格子的 预算值
+                //在队列中存入每个格子的 优先值
                 queue.give({
                     point:[x,y],
                     priority:priority
@@ -180,7 +182,6 @@
             //移除队列单个元素
             // let [x, y] = queue.shift();
             let [x, y] = queue.take();
-            searchTable[100 * x + y] = 2;
             //寻找过的元素
             container.children[x * 100 + y].style.backgroundColor = "lightgreen"
             //console.log(x, y);
