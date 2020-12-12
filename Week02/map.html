@@ -147,11 +147,11 @@
             let new_cost = cost_so_far[pre] + graphCost([x,y],pre);
             //如果当前搜索格没有计入过 或者 当前搜索格的成本值比之前的小
             if(!cost_so_far[[x,y]] || new_cost < cost_so_far[[x,y]]){
-                await sleep(10);
+                await sleep(5);
                 //给当前搜索格赋予新的成本值
                 cost_so_far[[x,y]] = new_cost
                 //加入队列的元素
-                container.children[x * 100 + y].style.backgroundColor = "red"
+                container.children[x * 100 + y].style.backgroundColor = "pink"
                 //当前搜索的节点记录上他的前置搜索节点
                 came_from[100 * x + y] = pre
                 //当前格子的优先值 格子的成本值+离终点距离
