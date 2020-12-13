@@ -82,8 +82,9 @@
 
     //二叉树数据结构
     class BinaryTree {
-        constructor(node) {
+        constructor(node,compare) {
             this.root = node || null;
+            this.compare = compare || ((a, b) => a - b)
         }
 
         //插入节点
@@ -92,13 +93,13 @@
             let newNode = new Node(data);
             let insertNode = (node, newNode) => {
                 //判断新节点应该在当前节点的左边还是右边，如果是相同的树则直接return
-                if (newNode.data < node.data) {
+                if (this.compare(newNode.data,node.data) < 0) {
                     if (!node.leftChild) {
                         node.leftChild = newNode
                     } else {
                         insertNode(node.leftChild, newNode)
                     }
-                } else if (newNode.data > node.data) {
+                } else if (this.compare(newNode.data,node.data) > 0) {
                     if (!node.rightChlid) {
                         node.rightChlid = newNode
                     } else {
@@ -126,11 +127,11 @@
         remove(data) {
             let removeNode = (node, data) => {
                 if (!node) return null;
-                if (data < node.data) {
+                if (this.compare(data,node.data) < 0) {
                     //如果删除数据比当前节点小则从左边递归
                     node.leftChild = removeNode(node.leftChild, data)
                     return node;
-                } else if (data > node.data) {
+                } else if (this.compare(data,node.data)  > 0) {
                     //如果删除数据比当前节点大则从右边递归
                     node.rightChlid = removeNode(node.rightChlid, data)
                     return node;
@@ -230,6 +231,12 @@
             point: start,
             priority: 0
         }], (a, b) => a.priority - b.priority)
+
+        // let queue = new BinaryTree({
+        //     point:start,
+        //     priority:0
+        // },(a,b)=>a.priority-b.priority)
+
         let cost_so_far = {};
         cost_so_far[start] = 1;
         //加入队列逻辑
