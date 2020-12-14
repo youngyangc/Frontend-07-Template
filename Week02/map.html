@@ -105,7 +105,8 @@
                     } else {
                         insertNode(node.rightChlid, newNode)
                     }
-                } else {
+                } 
+                else {
                     return;
                 }
             }
@@ -227,15 +228,15 @@
         //把map拷贝了一份主要用于判断无法通行的位置 
         let wall_arr = Object.create(map);
         //var queue = [start];
-        let queue = new Sorted([{
-            point: start,
-            priority: 0
-        }], (a, b) => a.priority - b.priority)
+        // let queue = new Sorted([{
+        //     point: start,
+        //     priority: 0
+        // }], (a, b) => a.priority - b.priority)
 
-        // let queue = new BinaryTree(new Node({
-        //     point:start,
-        //     priority:0
-        // }),(a,b)=>a.priority-b.priority)
+        let queue = new BinaryTree(new Node({
+            point:start,
+            priority:0
+        }),(a,b)=>a.priority-b.priority)
 
         let cost_so_far = {};
         cost_so_far[start] = 1;
@@ -264,9 +265,13 @@
                 //当前格子的优先值 格子的成本值+离终点距离
                 let priority = new_cost + distance([x, y])
                 //在队列中存入每个格子的 优先值
-                queue.give({
+                // queue.give({
+                //     point: [x, y],
+                //     priority: priority
+                // })
+                queue.insert({
                     point: [x, y],
-                    priority: priority
+                    priority: priority+(100*x+y)/10000//此处(100*x+y)/10000是一个0.0n的小数 由于二叉树无法存储相同数字故给每个给格子的优先值加上一个不影响的唯一小数
                 })
             }
 
@@ -283,10 +288,17 @@
         }
 
         //知道队列中没有元素为止
-        while (queue.length) {
+        while (queue.root) {
             //移除队列单个元素
             // let [x, y] = queue.shift();
-            let [x, y] = queue.take().point;
+            // let [x, y] = queue.take().point;
+
+            let data = queue.getMin().data;
+            queue.remove(data);
+            let [x,y] = data.point;
+            
+            
+
             //寻找过的元素
             container.children[x * 100 + y].style.backgroundColor = "lightgreen"
             //console.log(x, y);
