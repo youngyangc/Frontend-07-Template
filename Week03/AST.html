@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AST</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    var regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g
+    var dictionary = ["Number", "Whitespce", "LineTerminator", "*", "/", "+", "-"];
+
+    function* tokenize(source) {
+        var result = null;
+        var lastIndex = 0;
+        while (true) {
+            lastIndex = regexp.lastIndex;
+            result = regexp.exec(source)
+            // console.log(lastIndex)
+            if (!result) break;
+            // 如果匹配文本的最后一个位置的下一个位置 - 匹配文本开始前的位置 大于 匹配到的文本长度则break;
+            if (regexp.lastIndex - lastIndex > result[0].length) break;
+            let token = {
+                type: null,
+                value: null
+            }
+
+            for (var i = 1; i <= dictionary.length; i++) {
+                if (result[i]) {
+                    token.type = dictionary[i - 1]
+                }
+            }
+            token.value = result[0]
+            // console.log(result)
+            yield token
+        }
+        yield {
+            type: "EOF"
+        }
+    }
+
+    for(let token of tokenize("1024 + 10 * 25")){
+        console.log(token)
+    }
+
+    function Expression(token){
+
+    }
+    function AdditiveExpression(source){
+
+    }
+    function MultiplicativeExpression(source){
+        
+    }
+
+</script>
+
+</html>
