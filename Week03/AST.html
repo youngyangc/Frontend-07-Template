@@ -12,7 +12,7 @@
 </body>
 <script>
     var regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g
-    var dictionary = ["Number", "Whitespce", "LineTerminator", "*", "/", "+", "-"];
+    var dictionary = ["Number", "Whitespace", "LineTerminator", "*", "/", "+", "-"];
 
     function* tokenize(source) {
         var result = null;
@@ -43,19 +43,85 @@
         }
     }
 
-    for(let token of tokenize("1024 + 10 * 25")){
-        console.log(token)
+    let source = [];
+
+    for (let token of tokenize("1 + 2 * 5 - 3")) {
+        if (token.type !== 'Whitespace' && token.type !== 'Lineterminator') {
+            source.push(token)
+        }
     }
 
-    function Expression(token){
+    function Expression(source) {
+        if(source[0].type === 'AdditiveExpression' && source[1] && source[1].type === 'EOF'){
+            let node ={
+                type: 'Expression',
+                children:[source.shift(),source.shift()]
+            }
+            source.unshift(node)
+            return node;
+        }
+        AdditiveExpression(source);
+        return Expression(source)
+    }
 
+    function AdditiveExpression(source) {
+        if(source[0].type === 'MultiplicativeExpression'){
+            let node ={
+                type: "AdditiveExpression",
+                children:[source[0]]
+            }
+            source[0] = node;
+            return AdditiveExpression(source);
+        }else if (source[0].type === 'AdditiveExpression' && source[1] && (source[1].type === '+' || source[1].type === '-')) {
+            let node = {
+                type: 'AdditiveExpression',
+                operation: source[1].type,
+                children: []
+            }
+            node.children.push(source.shift());
+            node.children.push(source.shift());
+            //需要将第三项也先处理成MultiplicativeExpression
+            MultiplicativeExpression(source);
+            node.children.push(source.shift());
+            source.unshift(node);
+            return AdditiveExpression(source)
+        }else if(source[0].type === 'AdditiveExpression'){
+            return source[0]
+        }else{
+            MultiplicativeExpression(source);//如果首项不是MultiplicativeExpression表达式则需先处理成MultiplicativeExpression
+        }
+        return AdditiveExpression(source)
     }
-    function AdditiveExpression(source){
+    function MultiplicativeExpression(source) {
+        //console.log(source)
+        if (source[0].type === 'Number') {
+            //如果第一个值为Number的话
+            let node = {
+                type: 'MultiplicativeExpression',
+                children: [source[0]]
+            }
+            source[0] = node;
+            //继续递归处理
+            return MultiplicativeExpression(source);
+        } else if (source[0].type === 'MultiplicativeExpression' && source[1] && (source[1].type === '*' || source[1].type === '/')) {
+            let node = {
+                type: 'MultiplicativeExpression',
+                operation: source[1].type,
+                children: []
+            }
+            node.children.push(source.shift());
+            node.children.push(source.shift());
+            node.children.push(source.shift());
+            source.unshift(node);
+            return MultiplicativeExpression(source)
+        }else if(source[0].type === 'MultiplicativeExpression'){
+            return source[0]
+        }
+        return MultiplicativeExpression(source)
+    }
 
-    }
-    function MultiplicativeExpression(source){
-        
-    }
+    console.log(Expression(source))
+
 
 </script>
 
