@@ -7,4 +7,4 @@
 2. 正则regexp
     + RegExpObject.lastIndex 为匹配文本的最后一个字符的下一个位置
 3. generator函数 每次函数yield 一个数据的时候都能被 外层 let .. of generatoreFuc() 获取到
-4. <AdditiveExpression> ::= <Number> | <MultiplicativeExpression><*><Number> | <MultiplicativeExpression><*><Number> | <AdditiveExpression><+><MultiplicativeExpress> | <AdditiveExpression><-><MultiplicativeExpress>
+4. \<AdditiveExpression\> ::= \<Number\> | \<MultiplicativeExpression\>\<*\>\<Number\> | \<MultiplicativeExpression\>\<*\>\<Number\> | \<AdditiveExpression\>\<+\>\<MultiplicativeExpress\> | \<AdditiveExpression\>\<-\>\<MultiplicativeExpress\>
