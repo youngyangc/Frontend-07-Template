@@ -1,4 +1,5 @@
-学习笔记
+# 学习笔记
+
 1. {}可以改变let的作用域，不同的{}域可以声明相同的let变量
 2. break只能跳出当前代码块，但是可以在外层代码块加入标志 outer:父代码块{子代码块{break outer}}
 3. javascript的3种异步机制：callback、promise、async/await(基于promise的封装)、generator/yield
