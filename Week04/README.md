@@ -13,4 +13,10 @@
         + 通用字符串分析
     + LL LR
         + 字符串多层级结构分析
-2. `Object.create(null)` 这样新建的对象可以避免受到`Object.prototype`上面的一些污染
+2. `Object.create(null)` 这样新建的对象可以避免受到`Object.prototype`上面的一些污染。
+3. KMP
+    + 寻找pattern中自重复的字符
+    + leetcode中对应28题
+4. Widcard
+    + \*代表匹配任意数量
+    + \?代表匹配任意值
